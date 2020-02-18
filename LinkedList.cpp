@@ -2,25 +2,30 @@
 #include <iostream>
 
 LinkedList::LinkedList()
-{
+{ 
     this->count = 0;
 }
 
 void LinkedList::addFront(int payload)
 {
-    Node* n = new Node(payload); //Node n = new Node(payload); in Java
+    //creates node to be added to front
+    Node* newNode = new Node(payload);
+    
+    if(!this->head)
+    {
+        //if the head does not point anywhere, 
+        //set the head to the new node
+        this->head = newNode;
+    }
+    else
+    {
+        //otherwise adjust affected pointers and
+        //lastly set the head
+        newNode->setNextNode(this->head);
+        this->head = newNode;
+    }    
 
-    //if list is currently empty
-    if(!this->head) //tests the pointer count of this->head (boils down to 0 if nothing points here)
-                        //Java: this.head == null
-    {
-        this->head = n;
-    }
-    else //list has at least 1 thing in it
-    {
-        n->setNextNode(this->head);
-        this->head = n;
-    }
+    //increase count once node is added
     this->count++;
 }
 
@@ -39,77 +44,138 @@ int LinkedList::removeFront()
     return val;
 }
 
-Node* LinkedList::runToEndOfList()
-{
-    Node* currNode = this->head;
-    while(currNode->getNextNode()) //returns true when currNode has a next node
-    {
-        currNode = currNode->getNextNode(); // (*currNode).getNextNode()
-    }
-    return currNode;
-}
-
 void LinkedList::addEnd(int payload)
 {
+    Node* newNode = new Node(payload);
+    Node* temp = this->head;
     if(!this->head)
     {
         this->addFront(payload);
     }
     else
     {
-        //we have at least one thing in our list
-        //traverse to end of list and connect new node
-
-        Node* n = new Node(payload);
-        Node* currNode = this->runToEndOfList();
-        //currNode now points to the end of our list (ie the last Node)
-        currNode->setNextNode(n);
-        this->count++;
-
-    } 
+        for(int i = 1; i<=this->count-1; i++) //while(temp->getNextNode())
+        {
+            temp = temp->getNextNode(); //(*temp).getNextNode();
+        }
+    }
+    temp->setNextNode(newNode);
+    this->count++;
 }
 
 int LinkedList::getEnd()
 {
-    Node* currNode = this->runToEndOfList();
-    //currnode points to the end of the list
-    return currNode->getPayload();
+    Node* traverse = this->head;
+    for(int i = 1; i<=this->count-1; i++)
+    {
+        traverse = traverse->getNextNode();
+    }
+    return traverse->getPayload();
 }
-
 
 int LinkedList::removeEnd()
 {
-    //we are assuming the list has at least one element in it for now
-    //is this a list with a single element in it?
-    if(!this->head->getNextNode())
+    int val;
+    if (!this->head->getNextNode())
     {
         return this->removeFront();
     }
     else
     {
-        //we have at least two elements in our list
-        Node* theLastGuy = this->runToEndOfList();
-        Node* theGuyBeforeTheLastGuy = this->head;
-        while(theGuyBeforeTheLastGuy->getNextNode() != theLastGuy)
+        Node* firstTraverse = this->head;
+        while(firstTraverse->getNextNode() != 0)
         {
-            theGuyBeforeTheLastGuy = theGuyBeforeTheLastGuy->getNextNode();
+            firstTraverse = firstTraverse->getNextNode();
+
         }
-        //theGuyBeforeTheLastGuy now points to the Node right before theLastGuy
-        theGuyBeforeTheLastGuy->setNextNode(0);
-        int valueToReturn = theLastGuy->getPayload();
-        delete theLastGuy;
+
+        Node* secondTraverse = this->head;
+        while(secondTraverse->getNextNode() != firstTraverse)
+        {
+            secondTraverse = secondTraverse->getNextNode();
+        }
+        firstTraverse->setNextNode(0);
+        secondTraverse->setNextNode(0);
+        val = firstTraverse->getPayload();
+        delete firstTraverse;
         this->count--;
-        return valueToReturn;
+        return val;
     }
-    
+}
+
+void LinkedList::addAtIndex(int index, int payload)
+{
+    if(index == 0)
+    {
+        this->addFront(payload);
+    }
+    else if (index == this->count)
+    {
+        this->addEnd(payload);
+    }
+    else
+    {
+        Node* newNode = new Node(payload);
+        Node* firstPoint = this->head->getNextNode();
+        Node* beforePoint = this->head;
+
+        for(int i = 1; i<index; i++)
+        {
+            firstPoint = firstPoint->getNextNode();
+            beforePoint = beforePoint->getNextNode();
+        }
+
+        beforePoint->setNextNode(newNode);
+        newNode->setNextNode(firstPoint);
+        this->count++; 
+    } 
+}
+
+int LinkedList::removeIndex(int index)
+{
+    int val;
+    if(index == 0)
+    {
+        val = this->removeFront();
+    }
+    else if (index == this->count-1)
+    {
+        val = this->removeEnd();
+    }
+    else
+    {
+        Node* firstPoint = this->head->getNextNode();
+        Node* beforePoint = this->head;
+
+        for(int i = index-1; i>0; i--)
+        {
+            firstPoint = firstPoint->getNextNode();
+            beforePoint = beforePoint->getNextNode();
+        }
+        val = firstPoint->getPayload();
+        beforePoint->setNextNode((firstPoint->getNextNode()));
+        firstPoint->setNextNode(0);
+        this->count--;
+    } 
+    return val;
+}
+
+int LinkedList::getIndex(int index)
+{
+    Node* traverse = this->head;
+    for(int i = index; i>0; i--)
+    {
+        traverse = traverse->getNextNode();
+    }
+    return traverse->getPayload();
 }
 
 void LinkedList::display()
 {
     Node* currNode = this->head;
-    for(int i = 0; i < this->count; i++)
+    for(int i = 0; i<this->count; i++)
     {
-        std::cout << currNode->getPayload() << "\n";
+        std::cout<<currNode->getPayload()<<"\n";
         currNode = currNode->getNextNode();
     }
 }

@@ -2,22 +2,28 @@
 #define LinkedList_hpp
 #include "Node.hpp"
 
-class LinkedList 
+class LinkedList
 {
-private:
-    Node* head;
-    int count;
-    Node* runToEndOfList();
-    
-public:
-    LinkedList();
-    void addFront(int payload);
-    int getFront();
-    int removeFront();
-    //hw 3 methods below
-    void addEnd(int payload);
-    int getEnd();
-    int removeEnd();
-    void display();
-};
+    //declares fields for LinkedList.cpp
+    //Head points to fist node and count number of 
+    //elements in the list
+    private: 
+        Node* head;
+        int count;
+
+    //declares methods for LinkedList.cpp
+    public: 
+        LinkedList(); 
+        void addFront(int payload);
+        int getFront();
+        int removeFront();
+        void addEnd(int payload);
+        int getEnd();
+        int removeEnd();
+        void display();
+        void addAtIndex(int index, int payload);
+        int getIndex(int index);
+        int removeIndex(int index);
+
+    };
 #endif /* LinkedList_hpp */
