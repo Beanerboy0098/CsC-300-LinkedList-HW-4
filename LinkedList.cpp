@@ -1,3 +1,4 @@
+
 #include "LinkedList.hpp"
 #include <iostream>
 
@@ -168,6 +169,77 @@ int LinkedList::getIndex(int index)
         traverse = traverse->getNextNode();
     }
     return traverse->getPayload();
+}
+
+bool LinkedList::isSorted()
+{
+    Node* first = this->head->getNextNode();
+    Node* second = this->head;
+    for(int i = 0; i<this->count-1; i++)
+    {
+       if(first->getPayload()>second->getPayload())
+       {
+           first = first->getNextNode();
+           second = second->getNextNode();
+       }
+       else if (first->getPayload()<second->getPayload())
+       {
+           return false;
+       }
+    }
+    return true;
+}
+
+void LinkedList::sort()
+{
+    Node* lastPoint = this->head;
+    Node* currPoint = lastPoint->getNextNode();
+    Node* tempPoint = currPoint->getNextNode();
+    Node* followTheLast = lastPoint;
+    while(isSorted() == false)
+    {
+        for(int j = 0; j<=this->count; j++)
+        {
+            if(this->head->getPayload()>currPoint->getPayload())
+            {
+                currPoint->setNextNode(lastPoint);
+                lastPoint->setNextNode(tempPoint);
+                this->head = currPoint;
+                //resets pointers
+                lastPoint = this->head;
+                currPoint = lastPoint->getNextNode();
+                tempPoint = currPoint->getNextNode();
+            }
+            //The following code will be in a loop
+
+            for(int i = 0; i<=this->count-j; i++)
+            {
+                if(currPoint->getPayload() > tempPoint->getPayload())
+                {
+                    //performs swap
+                    lastPoint->setNextNode(tempPoint);
+                    currPoint->setNextNode(tempPoint->getNextNode());
+                    tempPoint->setNextNode(currPoint);
+            
+                    //resets pointers
+                    lastPoint = followTheLast;
+                    currPoint = lastPoint->getNextNode();
+                    tempPoint = currPoint->getNextNode();
+                }
+                //Progress pointers
+                if(tempPoint->getNextNode()!=0)
+                {
+                    lastPoint = lastPoint->getNextNode();
+                    currPoint = currPoint->getNextNode();
+                    tempPoint = tempPoint->getNextNode();
+                    followTheLast = lastPoint;
+                }   
+            } 
+            lastPoint = this->head;
+            currPoint = lastPoint->getNextNode();
+            tempPoint = currPoint->getNextNode(); 
+        }
+    }
 }
 
 void LinkedList::display()
